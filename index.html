@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Для Данички</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #fff0f5);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      overflow: auto;
+    }
+
+    .container {
+      position: relative;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      max-width: 800px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      color: #ff69b4;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px rgba(255, 105, 180, 0.5);
+    }
+
+    .message {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      font-weight: 400;
+      color: #444;
+      text-align: justify;
+      margin-bottom: 30px;
+    }
+
+    .media-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .photo {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .photo-frame {
+      max-width: 250px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .photo-frame:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .caption {
+      font-size: 1rem;
+      color: #555;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    .gif-container {
+      flex: 1;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .gif-frame {
+      max-width: 200px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(255, 105, 180, 0.5);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 8px 15px rgba(255, 105, 180, 0.5);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 20px rgba(255, 105, 180, 0.7);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 8px 15px rgba(255, 105, 180, 0.5);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .media-section {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .photo,
+      .gif-container {
+        justify-content: center;
+      }
+
+      .photo-frame,
+      .gif-frame {
+        max-width: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Даничке от всего сердца! ❤</h1>
+    <div class="message">
+      <p>Дорогой Даня, ты невероятен! Твоя доброта, терпение и сила вдохновляют меня каждый день. Ты для меня больше, чем друг — ты свет, который озаряет этот мир. ❤</p>
+      <p>Ты не просто друг, ты источник вдохновения и тепла. Пусть впереди тебя ждут только светлые дни, наполненные счастьем, радостью и безграничной любовью.</p>
+    </div>
+
+    <div class="media-section">
+      <!-- Фото -->
+      <div class="photo">
+        <img src="xinb.jpg" alt="Даня" class="photo-frame">
+      </div>
+
+      <!-- Гифка -->
+      <div class="gif-container">
+        <img src="cute-cat.gif" alt="Милый котик" class="gif-frame">
+      </div>
+    </div>
+  </div>
+</body>
+</html>
