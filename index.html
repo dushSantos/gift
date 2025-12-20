@@ -556,10 +556,10 @@
   </button>
 
   <!-- Аудио элемент -->
-  <audio id="backgroundMusic" loop>
-    <source src="30.02 - Звезды в лужах.mp3" type="audio/mpeg">
-    <source src="30.02 - Звезды в лужах.ogg" type="audio/ogg">
-    <source src="30.02 - Звезды в лужах.wav" type="audio/wav">
+  <audio id="backgroundMusic" loop autoplay>
+    <source src="Кевин Костнер 9 ГРАММ.mp3" type="audio/mpeg">
+    <source src="Кевин Костнер 9 ГРАММ.ogg" type="audio/ogg">
+    <source src="Кевин Костнер 9 ГРАММ.wav" type="audio/wav">
   </audio>
 
   <div class="container">
@@ -688,6 +688,29 @@
 
       let isPlaying = false;
 
+      // Попытка автоматического воспроизведения при загрузке
+      const tryAutoPlay = () => {
+        backgroundMusic.play().then(() => {
+          musicIcon.textContent = '🎶';
+          musicControl.classList.add('playing');
+          isPlaying = true;
+        }).catch((error) => {
+          console.log('Автовоспроизведение заблокировано браузером. Нажмите на кнопку для воспроизведения.');
+          musicIcon.textContent = '🎵';
+          musicControl.title = 'Нажмите для воспроизведения музыки';
+        });
+      };
+
+      // Пробуем запустить сразу
+      tryAutoPlay();
+
+      // Также пробуем после первого взаимодействия пользователя
+      document.addEventListener('click', () => {
+        if (!isPlaying && backgroundMusic.paused) {
+          tryAutoPlay();
+        }
+      }, { once: true });
+
       musicControl.addEventListener('click', () => {
         if (isPlaying) {
           backgroundMusic.pause();
@@ -700,8 +723,7 @@
             musicControl.classList.add('playing');
             isPlaying = true;
           }).catch((error) => {
-            console.log('Автовоспроизведение заблокировано. Нажмите на кнопку для воспроизведения.');
-            // Показываем подсказку пользователю
+            console.log('Ошибка воспроизведения:', error);
             musicControl.title = 'Нажмите для воспроизведения музыки';
           });
         }
