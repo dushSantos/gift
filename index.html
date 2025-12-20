@@ -23,6 +23,9 @@
       min-height: 100vh;
       position: relative;
       overflow-x: hidden;
+      /* Оптимизация производительности */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* Анимированный фон с частицами */
@@ -42,6 +45,10 @@
       background: rgba(255, 255, 255, 0.6);
       border-radius: 50%;
       animation: float 15s infinite ease-in-out;
+      will-change: transform, opacity;
+      /* Оптимизация для мобильных */
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     @keyframes float {
@@ -80,6 +87,9 @@
       font-size: 20px;
       color: rgba(255, 105, 180, 0.4);
       animation: heartFloat 20s infinite ease-in-out;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     @keyframes heartFloat {
@@ -228,6 +238,8 @@
       max-width: 320px;
       margin-bottom: 20px;
       animation: floatPhoto 4s ease-in-out infinite;
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     @keyframes floatPhoto {
@@ -244,11 +256,13 @@
       height: auto;
       border-radius: 20px;
       box-shadow: 0 15px 35px rgba(255, 105, 180, 0.4);
-      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       animation: photoPulse 3s ease-in-out infinite;
       border: 5px solid rgba(255, 255, 255, 0.9);
       display: block;
       object-fit: cover;
+      will-change: transform, box-shadow;
+      transform: translateZ(0);
     }
 
     @keyframes photoPulse {
@@ -318,6 +332,52 @@
       background: white;
       border-radius: 50%;
       animation: sparkle 2s infinite;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+    }
+
+    /* Кнопка управления музыкой */
+    .music-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff69b4, #ff9a9e);
+      border: 3px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      transition: all 0.3s ease;
+      animation: musicPulse 2s ease-in-out infinite;
+    }
+
+    .music-control:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(255, 105, 180, 0.6);
+    }
+
+    .music-control.playing {
+      animation: musicPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes musicPulse {
+      0%, 100% {
+        box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
+      }
+      50% {
+        box-shadow: 0 8px 30px rgba(255, 105, 180, 0.6);
+      }
+    }
+
+    .music-control:active {
+      transform: scale(0.95);
     }
 
     @keyframes sparkle {
@@ -336,6 +396,34 @@
       .photos-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 25px;
+      }
+    }
+
+    /* Отключение тяжелых эффектов на мобильных */
+    @media (max-width: 768px) {
+      .particles,
+      .hearts {
+        display: none; /* Отключаем частицы и сердечки на мобильных */
+      }
+
+      .container::before {
+        animation: none; /* Отключаем блестящий эффект */
+      }
+
+      .photo-wrapper {
+        animation: none; /* Упрощаем анимации фотографий */
+      }
+
+      .photo-frame {
+        animation: none; /* Отключаем пульсацию */
+      }
+
+      .photo-caption {
+        animation: none; /* Упрощаем анимации подписей */
+      }
+
+      body {
+        background-attachment: scroll; /* Оптимизация фона */
       }
     }
 
@@ -384,6 +472,14 @@
 
       .heart {
         font-size: 16px;
+      }
+
+      .music-control {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        bottom: 15px;
+        right: 15px;
       }
     }
 
@@ -454,6 +550,18 @@
   <!-- Плавающие сердечки -->
   <div class="hearts" id="hearts"></div>
 
+  <!-- Кнопка управления музыкой -->
+  <button class="music-control" id="musicControl" title="Включить/выключить музыку">
+    <span id="musicIcon">🎵</span>
+  </button>
+
+  <!-- Аудио элемент -->
+  <audio id="backgroundMusic" loop>
+    <source src="30.02 - Звезды в лужах.mp3" type="audio/mpeg">
+    <source src="30.02 - Звезды в лужах.ogg" type="audio/ogg">
+    <source src="30.02 - Звезды в лужах.wav" type="audio/wav">
+  </audio>
+
   <div class="container">
     <h1>Для тебя, прекрасная ✨</h1>
     <div class="message">
@@ -508,10 +616,15 @@
   </div>
 
   <script>
-    // Создание анимированных частиц
+    // Определение мобильного устройства
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Создание анимированных частиц (только для десктопа)
     function createParticles() {
+      if (isMobile) return; // Пропускаем на мобильных
+      
       const particlesContainer = document.getElementById('particles');
-      const particleCount = 30;
+      const particleCount = isMobile ? 5 : 30; // Меньше частиц на мобильных
 
       for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
@@ -527,10 +640,12 @@
       }
     }
 
-    // Создание плавающих сердечек
+    // Создание плавающих сердечек (только для десктопа)
     function createHearts() {
+      if (isMobile) return; // Пропускаем на мобильных
+      
       const heartsContainer = document.getElementById('hearts');
-      const heartCount = 15;
+      const heartCount = isMobile ? 3 : 15; // Меньше сердечек на мобильных
       const heartSymbols = ['❤️', '💕', '💖', '💗', '💝', '💞', '💓', '💘'];
 
       for (let i = 0; i < heartCount; i++) {
@@ -545,10 +660,12 @@
       }
     }
 
-    // Создание блесток
+    // Создание блесток (только для десктопа)
     function createSparkles() {
+      if (isMobile) return; // Пропускаем на мобильных
+      
       const container = document.querySelector('.container');
-      const sparkleCount = 20;
+      const sparkleCount = isMobile ? 5 : 20; // Меньше блесток на мобильных
 
       for (let i = 0; i < sparkleCount; i++) {
         const sparkle = document.createElement('div');
@@ -561,27 +678,86 @@
       }
     }
 
+    // Управление музыкой
+    function initMusic() {
+      const musicControl = document.getElementById('musicControl');
+      const backgroundMusic = document.getElementById('backgroundMusic');
+      const musicIcon = document.getElementById('musicIcon');
+
+      if (!musicControl || !backgroundMusic) return;
+
+      let isPlaying = false;
+
+      musicControl.addEventListener('click', () => {
+        if (isPlaying) {
+          backgroundMusic.pause();
+          musicIcon.textContent = '🎵';
+          musicControl.classList.remove('playing');
+          isPlaying = false;
+        } else {
+          backgroundMusic.play().then(() => {
+            musicIcon.textContent = '🎶';
+            musicControl.classList.add('playing');
+            isPlaying = true;
+          }).catch((error) => {
+            console.log('Автовоспроизведение заблокировано. Нажмите на кнопку для воспроизведения.');
+            // Показываем подсказку пользователю
+            musicControl.title = 'Нажмите для воспроизведения музыки';
+          });
+        }
+      });
+
+      // Обновление иконки при изменении состояния
+      backgroundMusic.addEventListener('play', () => {
+        musicIcon.textContent = '🎶';
+        musicControl.classList.add('playing');
+        isPlaying = true;
+      });
+
+      backgroundMusic.addEventListener('pause', () => {
+        musicIcon.textContent = '🎵';
+        musicControl.classList.remove('playing');
+        isPlaying = false;
+      });
+    }
+
+    // Оптимизированный параллакс эффект (только для десктопа)
+    let ticking = false;
+    function updateParallax() {
+      if (isMobile) return; // Пропускаем на мобильных
+      
+      const scrolled = window.pageYOffset;
+      const particles = document.querySelector('.particles');
+      const hearts = document.querySelector('.hearts');
+      
+      if (particles) {
+        particles.style.transform = `translate3d(0, ${scrolled * 0.5}px, 0)`;
+      }
+      if (hearts) {
+        hearts.style.transform = `translate3d(0, ${scrolled * 0.3}px, 0)`;
+      }
+      
+      ticking = false;
+    }
+
+    function requestParallaxTick() {
+      if (!ticking) {
+        window.requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }
+
     // Инициализация при загрузке страницы
     window.addEventListener('load', () => {
       createParticles();
       createHearts();
       createSparkles();
+      initMusic();
     });
 
-    // Параллакс эффект при скролле (для десктопа)
-    if (window.innerWidth > 768) {
-      window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const particles = document.querySelector('.particles');
-        const hearts = document.querySelector('.hearts');
-        
-        if (particles) {
-          particles.style.transform = `translateY(${scrolled * 0.5}px)`;
-        }
-        if (hearts) {
-          hearts.style.transform = `translateY(${scrolled * 0.3}px)`;
-        }
-      });
+    // Параллакс эффект при скролле (только для десктопа, с оптимизацией)
+    if (!isMobile) {
+      window.addEventListener('scroll', requestParallaxTick, { passive: true });
     }
   </script>
 </body>
